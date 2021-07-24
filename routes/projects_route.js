@@ -10,6 +10,7 @@ router.post("/", isLoggedIn, function(req, res){
     var project_title = req.body.project_title;
     var skills_used = req.body.skills_used;
     var description = req.body.description;
+    var link = req.body.link;
 
     var newProject = {
         user: user,

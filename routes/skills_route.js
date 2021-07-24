@@ -13,7 +13,7 @@ router.post("/", isLoggedIn, function(req, res){
     var newSkills = {
         user: user,
         skills_title: skills_title,
-        description: skills,
+        skills: skills,
     }
     Skills.create(newSkills, function(err, newlyCreated){
         if(err){

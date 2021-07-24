@@ -7,6 +7,7 @@ var ProjectSchema = new mongoose.Schema({
     },
     project_title: String,
     skills_used: String,
+    link: String,
     description: [String],
 });
 

@@ -31,7 +31,7 @@ router.post("/", isLoggedIn, function(req, res){
         mail_id: mail_id,
         web_portfolio: web_portfolio,
         github: github,
-        linkedin: linkedin,
+        linkedIn: linkedIn,
     }
     ContactDetails.create(newContactDetails, function(err, newlyCreated){
         if(err){

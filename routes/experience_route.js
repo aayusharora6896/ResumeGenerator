@@ -13,6 +13,10 @@ router.post("/", isLoggedIn, function(req, res){
     var start_date = req.body.start_date;
     var end_date = req.body.end_date;
     var primaryWorkBreif = req.body.primaryWorkBreif;
+    var impact1 = req.body.impact1;
+    var impact2 = req.body.impact2;
+    var impact3 = req.body.impact3;
+    var impact4 = req.body.impact4;
    
     var newExperience = {
         user: user,
@@ -22,6 +26,10 @@ router.post("/", isLoggedIn, function(req, res){
         start_date = start_date,
         end_date = end_date,
         primaryWorkBreif = primaryWorkBreif,
+        impact1 = impact1,
+        impact2 = impact2,
+        impact3 = impact3,
+        impact4 = impact4,
     }
     Experience.create(newExperience, function(err, newlyCreated){
         if(err){

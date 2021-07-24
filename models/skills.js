@@ -6,7 +6,10 @@ var SkillsSchema = new mongoose.Schema({
         ref: "User",
     },
     skills_title: String,
-    skills: [String],
+    skills: [{
+        name: String,
+        level: Integer,
+    }],
 });
 
 

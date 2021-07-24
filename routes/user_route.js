@@ -23,12 +23,14 @@ router.post("/register", function (req, res) {
   var newUser = new User({ username: req.body.username });
   User.register(newUser, req.body.password, function (err, user) {
     if (err) {
-      req.flash("error", err.message);
-      return res.render("../views/register");
+      // req.flash("error", err.message);
+      // return res.render("../views/register");
+      res.json({"error": err});
     }
     passport.authenticate("local")(req, res, function () {
-      req.flash("success", "Successfully Logged in");
-      res.redirect("/secret");
+      res.json({"success": true})
+      // req.flash("success", "Successfully Logged in");
+      // res.redirect("/secret");
     });
   });
 });
@@ -42,13 +44,17 @@ router.get("/login", function (req, res) {
 //handling login logic
 router.post(
   "/login",
-  passport.authenticate("local", {
-    successRedirect: "/secret",
-    failureRedirect: "/login",
-    failureFlash: true,
-    successFlash: "Logged In Successfully!",
-  }),
-  function (req, res) {}
+  'basic', { session: false }),
+  function(req, res) {
+    res.json({ id: req.user.id, username: req.user.username });
+  }
+  // passport.authenticate("local", {
+  //   // successRedirect: "/secret",
+  //   // failureRedirect: "/login",
+  //   // failureFlash: true,
+  //   // successFlash: "Logged In Successfully!",
+  // }),
+  // function (req, res) {}
 );
 
 // Logout

@@ -59,10 +59,10 @@ app.use(function (req, res, next) {
 });
 
 //Requring Routes
-var userRoutes = require("./routes/user_routes");
-
-// Auth Route
-app.use("/", authRoutes);
+var userRoute = require("./routes/user_route");
+app.use("/", userRoute);
+var profileRoute = require("./routes/profile_route");
+app.use("/profile", profileRoute);
 
 // Port number decelaration
 app.listen(3000, (err) => {
