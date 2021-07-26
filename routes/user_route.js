@@ -89,16 +89,18 @@ router.post("/login", (req, res) => {
 });
 
 router.get(
-  "/",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    res.json({
-      id: req.user.id,
-      username: req.user.username,
-      email: req.user.email,
-    });
-  }
-);
+  "/:id", function(req, res){
+    User.findById(req.params.id).exec(function(err, foundUser){
+      if(err){
+        res.json({"sucess": "false", "error": err});
+      }else{
+        res.json({
+          "username": foundUser.username,
+          "email": foundUser.email
+        });
+      }
+    })
+  });
 
 
 module.exports = router;

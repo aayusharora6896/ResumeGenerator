@@ -4,7 +4,7 @@ var passport = require("passport");
 var moment = require("moment");
 var Experience = require("../models/experience");
 
-router.post("/", function(req, res){
+router.post("/experience", function(req, res){
     // var user = req.user.id;
     var user = req.body.user;
     var job_position = req.body.job_position;
@@ -42,6 +42,16 @@ router.post("/", function(req, res){
     });
 });
 
+router.get(
+    "/user/:user_id/experience", function(req, res){
+      Experience.find({"user": req.params.user_id}).populate("user", 'email username').exec(function(err, foundExperience){
+        if(err){
+          res.json({"sucess": "false", "error": err});
+        }else{
+          res.json(foundExperience);
+        }
+      })
+    });
 
 
 module.exports = router;

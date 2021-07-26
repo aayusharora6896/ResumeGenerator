@@ -50,13 +50,13 @@ require("./config/passport")(passport);
 
 // api dump
 app.use("/api/user", userRoutes);
-app.use("/api/profile", profileRoutes);
-app.use("/api/contact", contactRoutes);
-app.use("/api/education", educationRoutes);
-app.use("/api/experience", experienceRoutes);
-app.use("/api/achievement", achievementRoutes);
-app.use("/api/project", projectRoutes);
-app.use("/api/skills", skillsRoutes);
+app.use("/api", profileRoutes);
+app.use("/api", contactRoutes);
+app.use("/api", educationRoutes);
+app.use("/api", experienceRoutes);
+app.use("/api", achievementRoutes);
+app.use("/api", projectRoutes);
+app.use("/api", skillsRoutes);
 
 // Generating Endpoints
 // app._router.stack.forEach(print.bind(null, []));

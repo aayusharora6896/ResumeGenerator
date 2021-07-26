@@ -3,7 +3,7 @@ var router = express.Router();
 var passport = require("passport");
 var ContactDetails = require("../models/contact_details");
 
-router.post("/", function(req, res){
+router.post("/contact", function(req, res){
     // var user = req.user.id;
     var user = req.body.user;
     var address1 = req.body.address1;
@@ -41,6 +41,17 @@ router.post("/", function(req, res){
         }
     });
 });
+
+router.get(
+    "/user/:user_id/contact", function(req, res){
+      ContactDetails.find({"user": req.params.user_id}).populate("user", 'email username').exec(function(err, foundContact){
+        if(err){
+          res.json({"sucess": "false", "error": err});
+        }else{
+          res.json(foundContact);
+        }
+      })
+    });
 
 
 module.exports = router;

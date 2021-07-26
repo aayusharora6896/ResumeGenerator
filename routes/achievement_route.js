@@ -3,7 +3,7 @@ var router = express.Router();
 var passport = require("passport");
 var Achievements = require("../models/achievement");
 
-router.post("/", function(req, res){
+router.post("/achievement", function(req, res){
     var user = req.body.user;
     // var user = req.user._id;
     var title = req.body.title;
@@ -22,5 +22,17 @@ router.post("/", function(req, res){
         }
     });
 });
+
+router.get(
+    "/user/:user_id/achievements", function(req, res){
+      Achievements.find({"user": req.params.user_id}).populate("user", 'email username').exec(function(err, foundAchievement){
+        if(err){
+          res.json({"sucess": "false", "error": err});
+        }else{
+          res.json(foundAchievement);
+        }
+      })
+    });
+
 
 module.exports = router;

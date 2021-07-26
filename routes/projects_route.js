@@ -3,7 +3,7 @@ var router = express.Router();
 var passport = require("passport");
 var Projects = require("../models/projects");
 
-router.post("/", function(req, res){
+router.post("/project", function(req, res){
     var user = req.body.user;
     // var user = req.user.id;
     var project_title = req.body.project_title;
@@ -31,6 +31,17 @@ router.post("/", function(req, res){
     });
 });
 
+
+router.get(
+    "/user/:user_id/projects", function(req, res){
+      Projects.find({"user": req.params.user_id}).populate("user", 'email username').exec(function(err, foundProjects){
+        if(err){
+          res.json({"sucess": "false", "error": err});
+        }else{
+          res.json(foundProjects);
+        }
+      })
+    });
 
 
 module.exports = router;
