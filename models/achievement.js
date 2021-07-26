@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 
 var AchievementSchema = new mongoose.Schema({
     user: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },
     title: String,

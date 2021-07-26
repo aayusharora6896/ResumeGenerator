@@ -1,21 +1,25 @@
 var express = require("express");
 var router = express.Router();
 var passport = require("passport");
-var Projects = require("../models/project");
+var Projects = require("../models/projects");
 
-router.post("/", isLoggedIn, function(req, res){
-    var user ={
-        id: req.user._id,
-    }
+router.post("/", function(req, res){
+    var user = req.body.user;
+    // var user = req.user.id;
     var project_title = req.body.project_title;
     var skills_used = req.body.skills_used;
-    var description = req.body.description;
+    skills_used = skills_used.split(",");
+    var description1 = req.body.description1;
+    var description2 = req.body.description2;
+    var description3 = req.body.description3;
 
     var newProject = {
         user: user,
         project_title: project_title,
-        skills_used = skills_used,
-        description = description,
+        skills_used: skills_used,
+        description1: description1,
+        description2: description2,
+        description3:  description3,
     }
 
     Projects.create(newProject, function(err, newlyCreated){
@@ -28,12 +32,5 @@ router.post("/", isLoggedIn, function(req, res){
 });
 
 
-//middleware
-function isLoggedIn(req, res, next){
-    if(req.isAuthenticated()){
-        return next();
-    }
-    res.redirect("/login");
-}
 
 module.exports = router;

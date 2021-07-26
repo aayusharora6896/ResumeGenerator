@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 
 var ExperienceSchema = new mongoose.Schema({
     user: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },
     job_position: String,
@@ -10,7 +10,7 @@ var ExperienceSchema = new mongoose.Schema({
     location: String,
     start_date: String,
     end_date: String,
-    primaryWorkBreif: String,
+    primary_work_breif: String,
     impact1: String,
     impact2: String,
     impact3: String,

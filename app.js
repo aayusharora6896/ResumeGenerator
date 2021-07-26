@@ -1,14 +1,27 @@
-const express = require("express"),
-  // bodyParser = require("body-parser"),
-  mongoose = require("mongoose"),
-  dotenv = require("dotenv"),
-  morgan = require("morgan"),
-  passport = require("passport"),
-  flash = require("connect-flash"),
-  LocalStrategy = require("passport-local"),
-  User = require("./models/user");
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const passport = require("passport");
+const dotenv = require("dotenv");
 
-var app = express();
+//use Routes
+const userRoutes = require("./routes/user_route");
+const profileRoutes = require("./routes/profile_route");
+const contactRoutes = require("./routes/contact_details_route");
+const educationRoutes = require("./routes/education_route");
+const achievementRoutes = require("./routes/achievement_route");
+const experienceRoutes = require("./routes/experience_route");
+const projectRoutes = require("./routes/projects_route");
+const skillsRoutes = require("./routes/skills_route");
+
+// const print = require("./generate-endpoints");
+const app = express();
+const cors = require("cors");
+
+//Body parser middlware
+app.use(bodyParser.urlencoded({ urlencoded: false }));
+app.use(bodyParser.json());
+app.use(cors());
 dotenv.config();
 
 //MONGOOSE CONFIGURATION
@@ -29,46 +42,27 @@ mongoose.connect(
 );
 
 const conn = mongoose.connection;
-app.use(morgan("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname + "/public"));
-app.use(flash());
-
-app.set("view engine", "ejs");
-
-// PASSPORT CONFIGURATION
-app.use(
-  require("express-session")({
-    secret: "You better start your vocab practice Patrice!!!",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+//Passport middleware
 app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
 
-app.use(function (req, res, next) {
-  res.locals.currentUser = req.user;
-  res.locals.error = req.flash("error");
-  res.locals.success = req.flash("success");
-  next();
-});
+//Passport config
+require("./config/passport")(passport);
 
-//Requring Routes
-var userRoutes = require("./routes/user_routes");
+// api dump
+app.use("/api/user", userRoutes);
+app.use("/api/profile", profileRoutes);
+app.use("/api/contact", contactRoutes);
+app.use("/api/education", educationRoutes);
+app.use("/api/experience", experienceRoutes);
+app.use("/api/achievement", achievementRoutes);
+app.use("/api/project", projectRoutes);
+app.use("/api/skills", skillsRoutes);
 
-// Auth Route
-app.use("/", authRoutes);
+// Generating Endpoints
+// app._router.stack.forEach(print.bind(null, []));
 
-// Port number decelaration
-app.listen(3000, (err) => {
-  if (err) {
-    console.log(err);
-  } else {
-    console.log("Server is running on port 3000");
-  }
-});
+const port = process.env.PORT || 3000;
+
+app.listen(port, () =>
+  console.log(`Server is running on ${port}`)
+);

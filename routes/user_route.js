@@ -1,70 +1,104 @@
-var express = require("express");
-var router = express.Router();
-var passport = require("passport");
-var User = require("../models/user");
+const router = require("express").Router();
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const passport = require("passport");
 
-// Index
-router.get("/", (req, res) => {
-  res.render("landing");
-});
+// Load input validation
+// const validateRegisterInput = require("../validation/register");
+// const validateLoginInput = require("../validation/login");
 
-router.get("/secret", isLoggedIn, (req, res) => {
-  res.render("secret");
-});
+// Create Account
+router.post("/register", (req, res) => {
+  // const { errors, isValid } = validateRegisterInput(req.body);
+  // Check Validation
+  // if (!isValid) {
+  //   return res.status(400).json(errors);
+  // }
 
-// Register
-// show register form
-router.get("/register", function (req, res) {
-  res.render("../views/register");
-});
-
-//handle sign up logic
-router.post("/register", function (req, res) {
-  var newUser = new User({ username: req.body.username });
-  User.register(newUser, req.body.password, function (err, user) {
-    if (err) {
-      req.flash("error", err.message);
-      return res.render("../views/register");
+  User.findOne({ email: req.body.email }).then((user) => {
+    if (user) {
+      // errors = "Email already exist";
+      // return res.status(400).json(errors);
+      return res.status(400).json("Email already exist");
+    } else {
+      const newUser = new User({
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+      });
+      bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+          if (err) throw err;
+          newUser.password = hash;
+          newUser
+            .save()
+            .then((user) => res.json(user))
+            .catch((err) => console.log(err));
+        });
+      });
     }
-    passport.authenticate("local")(req, res, function () {
-      req.flash("success", "Successfully Logged in");
-      res.redirect("/secret");
+  });
+});
+
+
+// post Login
+router.post("/login", (req, res) => {
+  // const { errors, isValid } = validateLoginInput(req.body);
+
+  // Check Validation
+  // if (!isValid) {
+  //   return res.status(400).json(errors);
+  // }
+
+  const email = req.body.email;
+  const password = req.body.password;
+  User.findOne({ email }).then((user) => {
+    //Check for user
+    if (!user) {
+      // errors = "User not found";
+      // return res.status(404).json(errors);
+      return res.status(404).json("User not found");
+    }
+    //User Matched
+
+    //Check Password
+    bcrypt.compare(password, user.password).then((isMatch) => {
+      if (isMatch) {
+        //Password Matched
+        // Payload for jwt sign
+        const payload = { user: user.id, name: user.username };
+
+        // Sign Token
+        jwt.sign(
+          payload,
+          process.env.KEY,
+          { expiresIn: 3600 },
+          (err, token) => {
+            res.json({
+              success: true,
+              token: "Bearer " + token,
+            });
+          }
+        );
+      } else {
+        return res.status(400).json("Password Incorrect");
+      }
     });
   });
 });
 
-// Sign In
-//show signin form
-router.get("/login", function (req, res) {
-  res.render("login");
-});
-
-//handling login logic
-router.post(
-  "/login",
-  passport.authenticate("local", {
-    successRedirect: "/secret",
-    failureRedirect: "/login",
-    failureFlash: true,
-    successFlash: "Logged In Successfully!",
-  }),
-  function (req, res) {}
+router.get(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    res.json({
+      id: req.user.id,
+      username: req.user.username,
+      email: req.user.email,
+    });
+  }
 );
 
-// Logout
-router.get("/logout", function (req, res) {
-  req.logout();
-  req.flash("success", "Logged out the user!!");
-  res.redirect("/");
-});
-
-// Middleware
-function isLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  req.flash("error", "Please Login First");
-  res.redirect("/login");
-}
 
 module.exports = router;

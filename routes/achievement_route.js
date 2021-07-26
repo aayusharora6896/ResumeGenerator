@@ -1,12 +1,11 @@
 var express = require("express");
 var router = express.Router();
 var passport = require("passport");
-var Achievements = require("../models/achievements");
+var Achievements = require("../models/achievement");
 
-router.post("/", isLoggedIn, function(req, res){
-    var user ={
-        id: req.user._id,
-    }
+router.post("/", function(req, res){
+    var user = req.body.user;
+    // var user = req.user._id;
     var title = req.body.title;
     var description = req.body.description;
    
@@ -23,14 +22,5 @@ router.post("/", isLoggedIn, function(req, res){
         }
     });
 });
-
-
-//middleware
-function isLoggedIn(req, res, next){
-    if(req.isAuthenticated()){
-        return next();
-    }
-    res.redirect("/login");
-}
 
 module.exports = router;

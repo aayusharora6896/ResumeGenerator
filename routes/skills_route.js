@@ -3,17 +3,18 @@ var router = express.Router();
 var passport = require("passport");
 var Skills = require("../models/skills");
 
-router.post("/", isLoggedIn, function(req, res){
-    var user ={
-        id: req.user._id,
-    }
+router.post("/", function(req, res){
+    var user = req.body.user;
+    // var user = req.user.id;
     var skills_title = req.body.skills_title;
     var skills = req.body.skills;
+    skills = skills.split(",");
+
    
     var newSkills = {
         user: user,
         skills_title: skills_title,
-        description: skills,
+        skills: skills,
     }
     Skills.create(newSkills, function(err, newlyCreated){
         if(err){
@@ -23,14 +24,5 @@ router.post("/", isLoggedIn, function(req, res){
         }
     });
 });
-
-
-//middleware
-function isLoggedIn(req, res, next){
-    if(req.isAuthenticated()){
-        return next();
-    }
-    res.redirect("/login");
-}
 
 module.exports = router;

@@ -3,10 +3,9 @@ var router = express.Router();
 var passport = require("passport");
 var ContactDetails = require("../models/contact_details");
 
-router.post("/", isLoggedIn, function(req, res){
-    var user ={
-        id: req.user._id,
-    }
+router.post("/", function(req, res){
+    // var user = req.user.id;
+    var user = req.body.user;
     var address1 = req.body.address1;
     var address2 = req.body.address2;
     var address_city = req.body.address_city;
@@ -15,6 +14,7 @@ router.post("/", isLoggedIn, function(req, res){
     var pincode = req.body.pincode;
     var phone_number = req.body.phone_number;
     var mail_id = req.body.mail_id;
+    // var mail_id = req.user.email;
     var web_portfolio = req.body.web_portfolio;
     var github = req.body.github;
     var linkedIn = req.body.linkedIn;
@@ -31,7 +31,7 @@ router.post("/", isLoggedIn, function(req, res){
         mail_id: mail_id,
         web_portfolio: web_portfolio,
         github: github,
-        linkedin: linkedin,
+        linkedIn: linkedIn,
     }
     ContactDetails.create(newContactDetails, function(err, newlyCreated){
         if(err){
@@ -42,13 +42,5 @@ router.post("/", isLoggedIn, function(req, res){
     });
 });
 
-
-//middleware
-function isLoggedIn(req, res, next){
-    if(req.isAuthenticated()){
-        return next();
-    }
-    res.redirect("/login");
-}
 
 module.exports = router;
