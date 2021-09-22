@@ -3,10 +3,15 @@ var router = express.Router();
 var passport = require("passport");
 var moment = require("moment");
 var Experience = require("../models/experience");
+var User = require("../models/user");
 
-router.post("/experience", function(req, res){
+router.post("/user/:user_id/experience", function(req, res){
+  User.findOne({"_id": req.params.user_id}).populate("user", 'email username').exec(function(err, foundUser){
+    if(err){
+      res.json({"sucess": "false", "error": err});
+    }else{
     // var user = req.user.id;
-    var user = req.body.user;
+    // var user = req.body.user;
     var job_position = req.body.job_position;
     var company = req.body.company;
     var location = req.body.location;
@@ -21,7 +26,7 @@ router.post("/experience", function(req, res){
     var impact4 = req.body.impact4;
    
     var newExperience = {
-        user: user,
+        user: foundUser._id,
         job_position: job_position,
         company: company,
         location: location,
@@ -40,10 +45,12 @@ router.post("/experience", function(req, res){
             res.json(newlyCreated);
         }
     });
+  }
+});
 });
 
 router.get(
-    "/user/:user_id/experience", function(req, res){
+    "/user/:user_id/experiences", function(req, res){
       Experience.find({"user": req.params.user_id}).populate("user", 'email username').exec(function(err, foundExperience){
         if(err){
           res.json({"sucess": "false", "error": err});
@@ -53,5 +60,28 @@ router.get(
       })
     });
 
+  // Update the experience
+    router.patch("/user/:user_id/experiences/:id", function(req, res){
+      //find and update the correct experience
+      // var data
+        Experience.findByIdAndUpdate(req.params.id, req.body, {new: true}, function (err, updatedExperiences){
+          if(err){
+            res.json(err);
+          }else{
+            res.json(updatedExperiences);
+          }
+      });
+  });
 
+  // Delete the experience
+  router.delete("/user/:user_id/experience/:id", function(req, res){
+    Experience.findByIdAndRemove(req.params.id, function(err){
+        if(err){
+            return res.json(err);
+        }else{
+            return res.json("Deleted");
+        }
+    });
+  });
+  
 module.exports = router;

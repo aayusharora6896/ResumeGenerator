@@ -2,15 +2,20 @@ var express = require("express");
 var router = express.Router();
 var passport = require("passport");
 var Achievements = require("../models/achievement");
+var User = require("../models/user");
 
-router.post("/achievement", function(req, res){
-    var user = req.body.user;
+router.post("/user/:user_id/achievement", function(req, res){
+  User.findOne({"_id": req.params.user_id}).populate("user", 'email username').exec(function(err, foundUser){
+    if(err){
+      res.json({"sucess": "false", "error": err});
+    }else{
+    // var user = req.body.user;
     // var user = req.user._id;
     var title = req.body.title;
     var description = req.body.description;
    
     var newAchievement = {
-        user: user,
+        user: foundUser._id,
         title: title,
         description: description,
     }
@@ -21,6 +26,8 @@ router.post("/achievement", function(req, res){
             res.json(newlyCreated);
         }
     });
+  }
+});
 });
 
 router.get(
@@ -34,5 +41,31 @@ router.get(
       })
     });
 
+        // Update the Achievements
+        router.patch("/user/:user_id/achievements/:id", function(req, res){
+          //find and update the correct achievements
+          // var data
+            Achievements.findByIdAndUpdate(req.params.id, req.body, {new: true}, function (err, updatedAchievements){
+              if(err){
+                res.json(err);
+              }else{
+                res.json(updatedAchievements);
+              }
+          });
+      });
+    
 
+  // Delete the Achievements
+  router.delete("/user/:user_id/achievement/:id", function(req, res){
+    Achievements.findByIdAndRemove(req.params.id, function(err){
+        if(err){
+            return res.json(err);
+        }else{
+            // console.log(req.params.user_id);
+            // console.log(req.params.id);
+            return res.json("Deleted");
+        }
+    });
+  });
+  
 module.exports = router;
