@@ -13,6 +13,7 @@ const achievementRoutes = require("./routes/achievement_route");
 const experienceRoutes = require("./routes/experience_route");
 const projectRoutes = require("./routes/projects_route");
 const skillsRoutes = require("./routes/skills_route");
+const publicationsRoutes = require("./routes/publication_route");
 
 // const print = require("./generate-endpoints");
 const app = express();
@@ -31,6 +32,7 @@ mongoose.connect(
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
+    useFindAndModify: false
   },
   (err) => {
     if (err) {
@@ -50,18 +52,22 @@ require("./config/passport")(passport);
 
 // api dump
 app.use("/api/user", userRoutes);
-app.use("/api/profile", profileRoutes);
-app.use("/api/contact", contactRoutes);
-app.use("/api/education", educationRoutes);
-app.use("/api/experience", experienceRoutes);
-app.use("/api/achievement", achievementRoutes);
-app.use("/api/project", projectRoutes);
-app.use("/api/skills", skillsRoutes);
+app.use("/api", profileRoutes);
+app.use("/api", contactRoutes);
+app.use("/api", educationRoutes);
+app.use("/api", experienceRoutes);
+app.use("/api", achievementRoutes);
+app.use("/api", projectRoutes);
+app.use("/api", skillsRoutes);
+app.use("/api", publicationsRoutes);
+// app.use("/api", visibilityRoutes);
 
+// check forms-mongoose to create forms from mongoose schema
+// https://github.com/aluzed/react-mongoose-form-maker
 // Generating Endpoints
 // app._router.stack.forEach(print.bind(null, []));
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 app.listen(port, () =>
   console.log(`Server is running on ${port}`)

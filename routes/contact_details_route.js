@@ -2,10 +2,15 @@ var express = require("express");
 var router = express.Router();
 var passport = require("passport");
 var ContactDetails = require("../models/contact_details");
+var User = require("../models/user");
 
-router.post("/", function(req, res){
-    // var user = req.user.id;
-    var user = req.body.user;
+router.post("/user/:user_id/contact", function(req, res){
+  User.findOne({"_id": req.params.user_id}).populate("user", 'email username').exec(function(err, foundUser){
+    if(err){
+      res.json({"sucess": "false", "error": err});
+    }else{  
+  // var user = req.user.id;
+    // var user = req.body.user;
     var address1 = req.body.address1;
     var address2 = req.body.address2;
     var address_city = req.body.address_city;
@@ -20,7 +25,7 @@ router.post("/", function(req, res){
     var linkedIn = req.body.linkedIn;
     
     var newContactDetails = {
-        user: user,
+        user: foundUser._id,
         address1: address1,
         address2: address2,
         address_city: address_city,
@@ -40,7 +45,43 @@ router.post("/", function(req, res){
             res.json(newlyCreated);
         }
     });
+  }
+});
 });
 
+router.get(
+    "/user/:user_id/contact", function(req, res){
+      ContactDetails.find({"user": req.params.user_id}).populate("user", 'email username').exec(function(err, foundContact){
+        if(err){
+          res.json({"sucess": "false", "error": err});
+        }else{
+          res.json(foundContact);
+        }
+      })
+    });
 
+        // Update the contact
+        router.patch("/user/:user_id/contact/:id", function(req, res){
+          //find and update the correct contact
+          // var data
+            ContactDetails.findByIdAndUpdate(req.params.id, req.body, {new: true}, function (err, updatedContact){
+              if(err){
+                res.json(err);
+              }else{
+                res.json(updatedContact);
+              }
+          });
+      });
+
+  // Delete the Contact Details
+  router.delete("/user/:user_id/contact/:id", function(req, res){
+    ContactDetails.findByIdAndRemove(req.params.id, function(err){
+        if(err){
+            return res.json(err);
+        }else{
+            return res.json("Deleted");
+        }
+    });
+  });
+  
 module.exports = router;

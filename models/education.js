@@ -13,7 +13,10 @@ var EducationSchema = new mongoose.Schema({
     university_state: String,
     university_country: String,
     year_begin: String,
-    year_end: String
+	month_begin: String,
+    year_end: String,
+	month_end: String,
+	gpa: String,
 });
 
 

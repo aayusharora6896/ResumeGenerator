@@ -1,8 +1,10 @@
 const router = require("express").Router();
-const User = require("../models/User");
+const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
+var ObjectId = require('mongodb').ObjectID;
+var mongoose = require("mongoose");
 
 // Load input validation
 // const validateRegisterInput = require("../validation/register");
@@ -15,7 +17,6 @@ router.post("/register", (req, res) => {
   // if (!isValid) {
   //   return res.status(400).json(errors);
   // }
-
   User.findOne({ email: req.body.email }).then((user) => {
     if (user) {
       // errors = "Email already exist";
@@ -89,16 +90,64 @@ router.post("/login", (req, res) => {
 });
 
 router.get(
-  "/",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    res.json({
-      id: req.user.id,
-      username: req.user.username,
-      email: req.user.email,
-    });
-  }
-);
+  "/:id", function(req, res){
+          User.aggregate([{
+             $project: {
+              _id: 1,
+              username: 1,
+              email: 1,
+            } }, { $lookup: {
+              from: 'profiles',
+              localField: '_id',
+              foreignField: 'user',
+              as: 'Profile'
+            } }, { $unwind:{
+              path: '$Profile',
+            } }, { $lookup: {
+              from: 'contactdetails',
+              localField: '_id',
+              foreignField: 'user',
+              as: 'Contact Details'
+            } }, { $unwind: {
+              path: '$Contact Details',
+            } }, { $lookup: {
+              from: 'educations',
+              localField: '_id',
+              foreignField: 'user',
+              as: 'Education'
+            } }, { $lookup: {
+              from: 'projects',
+              localField: '_id',
+              foreignField: 'user',
+              as: 'Projects'
+            } }, { $lookup: {
+              from: 'experiences',
+              localField: '_id',
+              foreignField: 'user',
+              as: 'Experiences'
+            } }, { $lookup: {
+              from: 'skills',
+              localField: '_id',
+              foreignField: 'user',
+              as: 'Skills'
+            } }, { $lookup: {
+              from: 'achievements',
+              localField: '_id',
+              foreignField: 'user',
+              as: 'Achievements'
+            } }, 
+            { $match: {
 
+              _id: ObjectId(req.params.id),
+            } },  
+        ],function(err, foundUser){
+          if(err){
+            res.json({"sucess": "false", "error": err});
+          }else{
+            return res.json(foundUser);
+          }
+        }
+  );
+});
 
 module.exports = router;

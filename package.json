@@ -5,6 +5,7 @@
   "main": "app.js",
   "start": "nodemon app.js",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -14,6 +15,7 @@
     "moment": "^2.29.1",
     "mongoose": "^5.11.14",
     "mongoose-deep-populate": "^3.2.0",
+    "mongoose-dynamic-schemas": "^1.2.6",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.7",
     "passport": "^0.4.1",
@@ -21,7 +23,8 @@
     "validator": "^13.5.2"
   },
   "scripts": {
-    "test": "nodemon"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
   },
   "author": "Ayush Arora",
   "license": "ISC"
